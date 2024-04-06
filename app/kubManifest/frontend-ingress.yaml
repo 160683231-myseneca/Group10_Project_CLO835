@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: myapp-ingress
+  namespace: webapp
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /v1(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: myapp-v1-svc
+            port:
+              number: 80
+      - path: /v2(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: myapp-v2-svc
+            port:
+              number: 80
