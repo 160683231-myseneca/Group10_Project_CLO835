@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Employee Information</title>
+  </head>
+  <body
+    style="font-family: avenir; background: {{ COLOR }}; text-align: center;">
+    <h1 style="color: DodgerBlue">Version {{ VERSION }}</h1>
+    <h2 style="color: DodgerBlue">Employee Information</h2>
+    <div style="color: black; font-size: large">
+      Employee ID:<br />
+      {{ id }} <br /><br />
+      First Name:<br />
+      {{ fname }} <br /><br />
+      Last Name:<br />
+      {{ lname }} <br /><br />
+      Primary Interest:<br />
+      {{ interest }} <br /><br />
+      Location:<br />
+      {{ location }} <br /><br />
+    </div>
+    <a href="{{ complete_url('/about') }}">About Us</a>
+    <a href="{{ complete_url('/') }}">Back</a>
+  </body>
+</html>

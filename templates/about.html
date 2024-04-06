@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hello from Flask</title>
+  </head>
+  <body style="background: {{ COLOR }};">
+    <div
+      style="
+        color: #e4e4e4;
+        text-align: center;
+        height: 90px;
+        vertical-align: middle;
+      ">
+      <h1 style="color: DodgerBlue">Version {{ VERSION }}</h1>
+      {% if name %}
+      <h1>Hello from {{ name }}!</h1>
+      {% else %}
+      <h1>Hello From CLO835!</h1>
+      {% endif %} {% if contents %}
+      <textarea
+        rows="10"
+        cols="50">
+{{ contents }}</textarea
+      >
+      {% endif %}
+    </div>
+    <a href="{{ complete_url('/') }}">Back</a>
+  </body>
+</html>

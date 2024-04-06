@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Get Employee Information</title>
+  </head>
+  <body
+    style="background: {{ COLOR }}; font-family: avenir; text-align: center; color: black;">
+    <h1 style="color: DodgerBlue">Version {{ VERSION }}</h1>
+    <h2 style="color: DodgerBlue">Employee Information</h2>
+    <form
+      action="{{ complete_url('/fetchdata') }}"
+      autocomplete="on"
+      method="POST">
+      <h3 style="color: grey">Enter Employee ID</h3>
+      Employee ID:<br />
+      <input
+        style="height: 25px; font-size: 14pt"
+        type="number"
+        name="emp_id"
+        autofocus
+        size="40" /><br /><br />
+      <button
+        style="
+          background: grey;
+          height: 45px;
+          width: 200px;
+          color: white;
+          font-size: large;
+          font-style: oblique;
+        "
+        type="submit">
+        FETCH INFO</button
+      ><br /><br />
+    </form>
+    <a href="{{ complete_url('') }}">Back</a>
+  </body>
+</html>
