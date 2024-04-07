@@ -1,34 +1,15 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Employee Added</title>
-  </head>
-  <body
-    style="background: {{ COLOR }}; font-family: avenir; text-align: center;">
-    <div id="tofetch"></div>
-    <script>
-      var tofetch = document.getElementById('tofetch');
-      var imageUrl = '{{GROUPIMAGE}}';
-      var img = document.createElement('img');
-      img.src = imageUrl;
-      img.onload = function () {
-        tofetch.appendChild(img);
-      };
-      img.onerror = function () {
-        console.error('Image could not be loaded.');
-      };
-    </script>
-    <h1 style="color: DodgerBlue">Version {{ VERSION }}</h1>
-    <h1 style="color: DodgerBlue">
-      The employee {{ name }} was successfully added to the database
-    </h1>
-    <br />
-    <h2 style="color: DodgerBlue">
-      The Employee has been added to the database
-    </h2>
-    <br />
-    <h2>{{ name }}</h2>
-    <br />
-    <a href="{{ complete_url('/') }}">Back</a>
-  </body>
-</html>
+{% extends 'base.html' %} {% block content %}
+<div class="subcontentcontainer">
+  <h1>The employee {{ name }} was successfully added to the database</h1>
+  <br />
+  <h2>The Employee has been added to the database</h2>
+  <br />
+  <h2>{{ name }}</h2>
+  <br />
+</div>
+<a
+  class="bottomlink"
+  href="{{ complete_url('/') }}"
+  >Back</a
+>
+{% endblock %}

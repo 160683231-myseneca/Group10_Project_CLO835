@@ -1,0 +1,25 @@
+<div
+  class="bannercontainer">
+  <img
+    id="groupImageBanner"
+    alt="Group Banner" >
+  <div
+  class="subbannercontainer">
+    <div>
+      <h1 style="margin: 0">{{GROUPNAME}}</h1>
+      <h3 style="margin: 0">{{GROUPSLOGAN}}</h3>
+      <h4 style="margin: 0">Version: {{VERSION}}</h4>
+    </div>
+  </div>
+</img>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const imageUrl = '{{GROUPIMAGE}}';
+    const img = document.getElementById('groupImageBanner');
+    img.src = imageUrl;
+    img.onerror = () => {
+      console.error('Image could not be loaded.');
+    };
+  });
+</script>
