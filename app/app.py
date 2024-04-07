@@ -110,6 +110,7 @@ except Exception as e:
     
 @app.context_processor
 def inject_global_env():
+    app.logger.info(f"Injecting GROUPIMAGE={app.config['GROUPIMAGE']}")
     return dict(
         VERSION=app.config['VERSION'],
         COLOR=app.config['COLOR'],
@@ -126,6 +127,7 @@ def initialize_global_env():
     g.groupname = app.config['GROUPNAME']
     g.groupslogan = app.config['GROUPSLOGAN']
     g.groupimage = app.config['GROUPIMAGE']
+    app.logger.info(f"Initializing GROUPIMAGE={g.groupimage}")
 
 @app.context_processor
 def inject_versioned_url():
@@ -141,9 +143,6 @@ def inject_versioned_url():
         else:
             return f"/{endpoint.lstrip('/')}"
     return dict(complete_url=complete_url)
-
-print("Environment Color:", COLOR_FROM_ENV)
-print("Argparse Color:", args.color)
 
 
 @app.route("/", methods=['GET', 'POST'])
@@ -223,4 +222,4 @@ def fetchdata(path1=None, path2=None):
 
 if __name__ == '__main__':
 
-    app.run(host='0.0.0.0',port=8080,debug=True)
+    app.run(host='0.0.0.0',port=81,debug=True)
