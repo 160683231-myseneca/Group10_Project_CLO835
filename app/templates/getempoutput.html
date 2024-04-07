@@ -1,0 +1,22 @@
+{% extends 'base.html' %} {% block content %}
+<div class="subcontentcontainer">
+  <h2>Employee Information</h2>
+  <div>
+    Employee ID:<br />
+    {{ id }} <br /><br />
+    First Name:<br />
+    {{ fname }} <br /><br />
+    Last Name:<br />
+    {{ lname }} <br /><br />
+    Primary Interest:<br />
+    {{ interest }} <br /><br />
+    Location:<br />
+    {{ location }} <br /><br />
+  </div>
+</div>
+<a
+  class="bottomlink"
+  href="{{ complete_url('/') }}"
+  >Back</a
+>
+{% endblock %}

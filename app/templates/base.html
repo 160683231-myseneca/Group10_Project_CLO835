@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>FlaskApp</title>
+    <style>
+      :root {
+          --dynamic-color: {{ COLOR }};
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}" />
+    <link
+      rel="shortcut icon"
+      href="{{ url_for('static', filename='favicon.ico') }}" />
+  </head>
+  <body>
+    {% include 'banner.html' %}
+    <div class="contentcontainer">{% block content %}{% endblock %}</div>
+  </body>
+</html>

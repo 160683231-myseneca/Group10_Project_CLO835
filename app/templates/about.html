@@ -1,0 +1,22 @@
+{% extends 'base.html' %} {% block content %}
+<div class="subcontentcontainer">
+  {% if name %}
+  <h1>Hello from {{ name }}!</h1>
+  {% else %}
+  <h1>Hello From CLO835!</h1>
+  {% endif %} {% if contents %}
+  <textarea
+    id="textareaContents"
+    rows="10"
+    cols="50">
+{{ contents }} 
+</textarea
+  >
+  {% endif %}
+</div>
+<a
+  class="bottomlink"
+  href="{{ complete_url('/') }}"
+  >Back</a
+>
+{% endblock %}

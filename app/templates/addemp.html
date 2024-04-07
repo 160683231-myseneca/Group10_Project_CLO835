@@ -1,0 +1,44 @@
+{% extends 'base.html' %} {% block content %}
+<div class="subcontentcontainer">
+  <h3>Employee Database</h3>
+  <form
+    action="{{ complete_url('/addemp') }}"
+    autocomplete="on"
+    method="POST"
+    enctype="multipart/form-data">
+    Employee ID:<br />
+    <input
+      type="number"
+      name="emp_id"
+      autofocus /><br /><br />
+    First Name:<br />
+    <input
+      type="text"
+      name="first_name" /><br /><br />
+    Last Name:<br />
+    <input
+      type="text"
+      name="last_name" /><br /><br />
+    Primary Skills:<br />
+    <input
+      type="text"
+      name="primary_skill" /><br /><br />
+    Location:<br />
+    <input
+      type="text"
+      name="location" /><br /><br />
+    <button type="submit">UPDATE DATABASE</button><br /><br />
+    <button
+      type="submit"
+      formaction="{{ complete_url('/getemp') }}">
+      GET EMPLOYEE INFORMATION</button
+    ><br /><br />
+  </form>
+  <br />
+</div>
+<a
+  class="bottomlink"
+  href="{{ complete_url('/about') }}"
+  >About Us</a
+>
+{% endblock %}
