@@ -2,7 +2,11 @@ name: Deploy to ECR
 
 on:
   push:
-    branches: [main]
+    branches: 
+      - dev
+      - main
+    paths:
+      - 'app/**'
 
 jobs:
   build:
