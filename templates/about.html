@@ -3,7 +3,7 @@
   <head>
     <title>Hello from Flask</title>
   </head>
-  <body style="background: {{ COLOR }};">
+  <body style="background-color: {{ COLOR }};">
     <div
       style="
         color: #e4e4e4;
@@ -11,6 +11,19 @@
         height: 90px;
         vertical-align: middle;
       ">
+      <div id="tofetch"></div>
+      <script>
+        var tofetch = document.getElementById('tofetch');
+        var imageUrl = '{{GROUPIMAGE}}';
+        var img = document.createElement('img');
+        img.src = imageUrl;
+        img.onload = function () {
+          tofetch.appendChild(img);
+        };
+        img.onerror = function () {
+          console.error('Image could not be loaded.');
+        };
+      </script>
       <h1 style="color: DodgerBlue">Version {{ VERSION }}</h1>
       {% if name %}
       <h1>Hello from {{ name }}!</h1>

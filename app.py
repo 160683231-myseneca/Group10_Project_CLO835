@@ -13,20 +13,26 @@ app = Flask(__name__)
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
 app.logger.setLevel(logging.INFO)
 
-DBHOST = os.environ.get("DBHOST", "localhost")
-DBHOST = os.environ.get("DBHOST", "localhost")
-DBUSER = os.environ.get("DBUSER","root")
+def get_env_var_or_default(env_var_name, default_value):
+    return os.environ.get(env_var_name) or default_value
+
+GROUPNAME_FROM_ENV = get_env_var_or_default("GROUP_NAME", "Group Name")
+GROUPSLOGAN_FROM_ENV = get_env_var_or_default("GROUP_SLOGAN", "Our Group Slogan")
+GROUPIMAGE_FROM_ENV = get_env_var_or_default("GROUP_IMAGE", "https://picsum.photos/200")
+DBHOST = get_env_var_or_default("DBHOST", "localhost")
+DBUSER = get_env_var_or_default("DBUSER", "root")
 DBPWD = os.environ.get("DBPWD")
-if DBPWD is None:
-    raise ValueError("DBPWD environment variable is not set")
-DATABASE = os.environ.get("DATABASE", "employees")
-VERSION_FROM_ENV = os.environ.get("VERSION", "v1")
-COLOR_FROM_ENV = os.environ.get("APP_COLOR", "lime")
-try:
-    DBPORT = int(os.environ.get("DBPORT", "3306"))
-except ValueError:
-    print(f"Invalid DBPORT value. Using default port 3306.")
-    DBPORT = 3306
+if DBPWD is None or DBPWD == "":
+    raise ValueError("DBPWD environment variable is not set or is empty")
+DATABASE = get_env_var_or_default("DATABASE", "employees")
+VERSION_FROM_ENV = get_env_var_or_default("VERSION", "v1")
+COLOR_FROM_ENV = get_env_var_or_default("APP_COLOR", "lime")
+DBPORT = int(get_env_var_or_default("DBPORT", "3306"))
+
+print("All environment variables at startup:")
+for key, value in os.environ.items():
+    print(f"{key}: {value}")
+
 
 # Define the supported color codes
 color_codes = {
@@ -45,7 +51,7 @@ color_version_regex = re.compile(rf"^/(?P<color>{color_pattern})/(?P<version>v\d
 version_regex= re.compile(r"^/(?P<version>v\d+(\.\d+)*)(?:/|$)")
 color_regex = re.compile(rf"^/(?P<color>{color_pattern})(?:/|$)")
 
-def extract_version_and_color(request_path):
+def extract_global_env(request_path):
     version_color_match = version_color_regex.match(request_path)
     if version_color_match:
         version = version_color_match.group('version')
@@ -73,6 +79,9 @@ def extract_version_and_color(request_path):
 parser = argparse.ArgumentParser()
 parser.add_argument('--color', required=False, default=COLOR_FROM_ENV)
 parser.add_argument('--version', required=False, default=VERSION_FROM_ENV)
+parser.add_argument('--groupname', required=False, default=GROUPNAME_FROM_ENV)
+parser.add_argument('--groupslogan', required=False, default=GROUPSLOGAN_FROM_ENV)
+parser.add_argument('--groupimage', required=False, default=GROUPIMAGE_FROM_ENV)
 args = parser.parse_args()
 
 VERSION = args.version
@@ -80,10 +89,16 @@ if args.color in color_codes:
     COLOR = args.color
 else:
     COLOR = "red"
+GROUPNAME=args.groupname
+GROUPSLOGAN=args.groupslogan
+GROUPIMAGE=args.groupimage
 
 # Set the app configuration for VERSION and COLOR
 app.config['VERSION'] = VERSION
 app.config['COLOR'] = color_codes[COLOR]
+app.config['GROUPNAME'] = GROUPNAME
+app.config['GROUPSLOGAN'] = GROUPSLOGAN
+app.config['GROUPIMAGE'] = GROUPIMAGE
 
 # Connect to MySQL database
 try:
@@ -99,14 +114,23 @@ except Exception as e:
     exit(1)
     
 @app.context_processor
-def inject_version_and_color():
-    return dict(VERSION=app.config['VERSION'], COLOR=app.config['COLOR'])
+def inject_global_env():
+    return dict(
+        VERSION=app.config['VERSION'],
+        COLOR=app.config['COLOR'],
+        GROUPNAME=app.config['GROUPNAME'],
+        GROUPSLOGAN=app.config['GROUPSLOGAN'],
+        GROUPIMAGE=app.config['GROUPIMAGE']
+    )
     
 @app.before_request
-def initialize_version_color():
-    version, color = extract_version_and_color(request.path)
+def initialize_global_env():
+    version, color = extract_global_env(request.path)
     g.version = version
     g.color = color
+    g.groupname = app.config['GROUPNAME']
+    g.groupslogan = app.config['GROUPSLOGAN']
+    g.groupimage = app.config['GROUPIMAGE']
 
 @app.context_processor
 def inject_versioned_url():
@@ -122,6 +146,9 @@ def inject_versioned_url():
         else:
             return f"/{endpoint.lstrip('/')}"
     return dict(complete_url=complete_url)
+
+print("Environment Color:", COLOR_FROM_ENV)
+print("Argparse Color:", args.color)
 
 
 @app.route("/", methods=['GET', 'POST'])

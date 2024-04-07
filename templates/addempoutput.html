@@ -5,6 +5,19 @@
   </head>
   <body
     style="background: {{ COLOR }}; font-family: avenir; text-align: center;">
+    <div id="tofetch"></div>
+    <script>
+      var tofetch = document.getElementById('tofetch');
+      var imageUrl = '{{GROUPIMAGE}}';
+      var img = document.createElement('img');
+      img.src = imageUrl;
+      img.onload = function () {
+        tofetch.appendChild(img);
+      };
+      img.onerror = function () {
+        console.error('Image could not be loaded.');
+      };
+    </script>
     <h1 style="color: DodgerBlue">Version {{ VERSION }}</h1>
     <h1 style="color: DodgerBlue">
       The employee {{ name }} was successfully added to the database
