@@ -29,11 +29,6 @@ VERSION_FROM_ENV = get_env_var_or_default("VERSION", "v1")
 COLOR_FROM_ENV = get_env_var_or_default("APP_COLOR", "lime")
 DBPORT = int(get_env_var_or_default("DBPORT", "3306"))
 
-print("All environment variables at startup:")
-for key, value in os.environ.items():
-    print(f"{key}: {value}")
-
-
 # Define the supported color codes
 color_codes = {
     "red": "#e74c3c",
