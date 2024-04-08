@@ -16,9 +16,10 @@ ENV APP_COLOR=${APP_COLOR} VERSION=${VERSION} GROUP_NAME=${GROUP_NAME} GROUP_SLO
 
 WORKDIR /app
 
-COPY . .
-
+COPY requirements.txt ./
 RUN pip install -r requirements.txt
+
+COPY . .
 
 EXPOSE 81
 

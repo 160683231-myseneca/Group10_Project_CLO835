@@ -18,7 +18,7 @@ def get_env_var_or_default(env_var_name, default_value):
 
 GROUPNAME_FROM_ENV = get_env_var_or_default("GROUP_NAME", "Group Name")
 GROUPSLOGAN_FROM_ENV = get_env_var_or_default("GROUP_SLOGAN", "Our Group Slogan")
-GROUPIMAGE_FROM_ENV = get_env_var_or_default("GROUP_IMAGE", "https://picsum.photos/200")
+GROUPIMAGE_FROM_ENV = get_env_var_or_default("GROUP_IMAGE", "https://picsum.photos/1300/250")
 DBHOST = get_env_var_or_default("DBHOST", "localhost")
 DBUSER = get_env_var_or_default("DBUSER", "root")
 DBPWD = os.environ.get("DBPWD")
@@ -26,7 +26,7 @@ if DBPWD is None or DBPWD == "":
     raise ValueError("DBPWD environment variable is not set or is empty")
 DATABASE = get_env_var_or_default("DATABASE", "employees")
 VERSION_FROM_ENV = get_env_var_or_default("VERSION", "v1")
-COLOR_FROM_ENV = get_env_var_or_default("APP_COLOR", "lime")
+COLOR_FROM_ENV = get_env_var_or_default("APP_COLOR", "opal")
 DBPORT = int(get_env_var_or_default("DBPORT", "3306"))
 
 # Define the supported color codes
@@ -38,6 +38,7 @@ color_codes = {
     "pink": "#f4c2c2",
     "darkblue": "#130f40",
     "lime": "#C1FF9C",
+    "opal": "#a8e4e0",
 }
 
 color_pattern = "|".join(color_codes.keys())

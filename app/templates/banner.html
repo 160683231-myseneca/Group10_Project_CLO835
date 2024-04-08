@@ -16,10 +16,15 @@
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const imageUrl = '{{GROUPIMAGE}}';
+    const fallbackImageUrl = 'https://picsum.photos/1300/250';
     const img = document.getElementById('groupImageBanner');
     img.src = imageUrl;
     img.onerror = () => {
-      console.error('Image could not be loaded.');
+      console.error('Image could not be loaded. Switching to fallback image.');
+      img.src = fallbackImageUrl;
+      img.onerror = () => {
+        console.error('Fallback image could not be loaded.');
+      };
     };
   });
   console.log("Image URL : {{GROUPIMAGE}}")
