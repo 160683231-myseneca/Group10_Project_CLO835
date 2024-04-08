@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp
+  namespace: final
+  labels:
+    app.kubernetes.io/name: myapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: myapp
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: myapp
+    spec:
+      containers:
+        - name: myapp-pod
+          image: 636276102612.dkr.ecr.us-east-1.amazonaws.com/app_image
+          env:
+            - name: DBHOST
+              value: 'mysql-svc.final.svc.cluster.local'
+            - name: DBPWD
+              valueFrom:
+                secretKeyRef:
+                  name: mydb-secret
+                  key: password
+            - name: VERSION
+              value: v1
+          ports:
+            - containerPort: 81
+          resources:
+            requests:
+              cpu: '100m'
+              memory: '100Mi'
+            limits:
+              cpu: '200m'
+              memory: '200Mi'
