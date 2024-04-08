@@ -37,6 +37,21 @@ spec:
                   key: password
             - name: VERSION
               value: v1
+            - name: GROUP_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: myapp-config
+                  key: Group_NAME
+            - name: GROUP_SLOGAN
+              valueFrom:
+                configMapKeyRef:
+                  name: myapp-config
+                  key: Group_SLOGAN
+            - name: GROUP_IMAGE
+              valueFrom:
+                configMapKeyRef:
+                  name: myapp-config
+                  key: Group_IMAGE
           ports:
             - containerPort: 81
           resources:

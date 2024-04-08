@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: myapp-config
+  namespace: final
+data:
+  GROUP_NAME: "Pod Pandits"
+  GROUP_SLOGAN: "Kubernetes: Because Good Things Come in Small Pods!""
+  GROUP_IMAGE:  "https://clo835finalbucket.s3.amazonaws.com/banner1.jpg"
