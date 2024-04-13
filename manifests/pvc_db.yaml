@@ -2,9 +2,11 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: app-test-pvc
-  namespace: db
+  namespace: final
   labels:
-    app: app-test
+    app.kubernetes.io/name: mysql
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/part-of: employeeapp
 spec:
   storageClassName: standard
   accessModes:
