@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-lb
+  namespace: final
+spec:
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 81
+  selector:
+    app.kubernetes.io/name: myapp
+    app.kubernetes.io/component: frontend
+    app.kubernetes.io/part-of: employeeapp
+    app.kubernetes.io/version: v1
