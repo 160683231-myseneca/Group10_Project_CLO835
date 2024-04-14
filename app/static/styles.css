@@ -13,7 +13,7 @@ body {
   color: darkslategrey;
   font-size: large;
 }
-div.bannercontainer {
+.bannercontainer {
   position: relative;
   width: 100%;
   overflow: hidden;
@@ -21,23 +21,23 @@ div.bannercontainer {
 }
 #groupImageBanner {
   height: 25vh;
-  object-fit: cover;
+  object-fit: fill;
   width: 100%;
 }
-div.subbannercontainer {
+.subbannercontainer {
   height: auto;
   background: rgba(255, 255, 255, 0.5);
   width: 100%;
   position: absolute;
   bottom: 5%;
 }
-div.contentcontainer {
+.contentcontainer {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   min-height: 75vh;
 }
-div.subcontentcontainer {
+.subcontentcontainer {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -51,7 +51,7 @@ h6,
 textarea {
   color: darkslategrey;
 }
-a.bottomlink {
+.bottomlink {
   margin-top: 10px;
   margin-bottom: 10px;
 }
