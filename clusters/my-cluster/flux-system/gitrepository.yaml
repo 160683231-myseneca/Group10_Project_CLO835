@@ -1,4 +1,4 @@
-apiVersion: source.toolkit.fluxcd.io/v1beta1
+apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
   name: flux-system
@@ -6,7 +6,7 @@ metadata:
 spec:
   interval: 1m
   url: "ssh://git@github.com/160683231-myseneca/Group10_Project_CLO835.git"
-  secretRef:
-    name: flux-git-deploy
   ref:
     branch: dev
+  secretRef:
+    name: flux-git-deploy

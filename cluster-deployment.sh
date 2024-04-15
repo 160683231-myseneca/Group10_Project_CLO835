@@ -63,9 +63,9 @@ read -s MYSQL_ROOT_PASSWORD
 kubectl create secret generic mydb-secret --from-literal=password="$MYSQL_ROOT_PASSWORD" --type=kubernetes.io/basic-auth -n final 
 
 echo "Deploying backend..."
-kubectl apply -f k8manifest/backend-pv.yaml
+kubectl apply -f k8manifest/backend-storageclass.yaml
 sleep 30s
-kubectl apply -f k8manifest/backend-deployment.yaml -n final
+kubectl apply -f k8manifest/backend-stateful.yaml -n final
 kubectl apply -f k8manifest/backend-service.yaml -n final
 
 sleep 60s
@@ -133,17 +133,31 @@ deploy_helm() {
 
 # kubectl rollout restart deployment/myapp -n final
 # kubectl delete ingressclass nginx
-# kubectl delete ingress --all -n final
-# kubectl delete configmaps --all -n final
-# kubectl delete services --all -n final
-# kubectl delete serviceacccounts --all -n final
-# kubectl delete secrets --all -n final
-# kubectl delete sealedsecrets --all -n final
-# kubectl delete roles --all -n final
-# kubectl delete rolebindings --all -n final
-# kubectl delete pvc --all -n final
-# kubectl delete all --all -n final
-# kubectl delete namespace final
+
+kubectl delete ingress --all -n final
+kubectl delete configmaps --all -n final
+kubectl delete services --all -n final
+kubectl delete serviceacccounts --all -n final
+kubectl delete secrets --all -n final
+kubectl delete sealedsecrets --all -n final
+kubectl delete roles --all -n final
+kubectl delete rolebindings --all -n final
+kubectl delete pvc --all -n final
+kubectl delete all --all -n final
+kubectl delete namespace final
+
+kubectl delete ingress --all -n project
+kubectl delete configmaps --all -n project
+kubectl delete services --all -n project
+kubectl delete serviceacccounts --all -n project
+kubectl delete secrets --all -n project
+kubectl delete sealedsecrets --all -n project
+kubectl delete roles --all -n project
+kubectl delete rolebindings --all -n project
+kubectl delete pvc --all -n project
+kubectl delete all --all -n project
+kubectl delete namespace project
+
 
 
 
@@ -161,10 +175,14 @@ helm repo update
 
 
 echo "Creating sealed secrets..."
+kubectl create secret generic mydb-secrettest --namespace final --dry-run=client --from-literal=password=mytopsecret -o yaml | kubeseal --controller-name=sealed-secrets-controller --controller-namespace=kube-system --scope cluster-wide --format yaml> testsecret.yaml
+kubectl create secret generic mydb-secrettest --namespace project --dry-run=client --from-literal=password=mytopsecret -o yaml | kubeseal --controller-name=sealed-secrets-controller --controller-namespace=kube-system --scope cluster-wide --format yaml> testsecret.yaml
+
+
 kubectl create secret generic mydb-secret --namespace project --dry-run=client --from-literal=password=mytopsecret -o yaml | kubeseal --controller-name=sealed-secrets-controller --controller-namespace=kube-system --scope cluster-wide --format yaml| kubectl apply -f -
 
-helm install web k8chart/ --values k8chart/values.yaml
-helm upgrade web k8chart/ --values k8chart/values.yaml
+helm install web -n final k8chart/ --values k8chart/values.yaml
+helm upgrade web -n final k8chart/ --values k8chart/values.yaml
 }
 
 delete_cluster() {
