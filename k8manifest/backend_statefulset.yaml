@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
       - name: mysql-pod
-        image: 636276102612.dkr.ecr.us-east-1.amazonaws.com/mysql_image
+        image: 636276102612.dkr.ecr.us-east-1.amazonaws.com/mysql_image:v2.1.7
         env:
         - name: MYSQL_ROOT_PASSWORD
           valueFrom:
