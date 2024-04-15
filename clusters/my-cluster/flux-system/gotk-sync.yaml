@@ -11,7 +11,7 @@ spec:
     branch: dev
   secretRef:
     name: flux-system
-  url: https://github.com/160683231-myseneca/Group10_Project_CLO835.git
+  url: ssh://git@github.com/160683231-myseneca/Group10_Project_CLO835
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
