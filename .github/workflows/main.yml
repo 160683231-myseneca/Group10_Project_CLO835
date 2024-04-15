@@ -76,7 +76,7 @@ jobs:
       - name: Build, test, tag, and push mysql image to Amazon ECR
         run: |
           echo "Starting DB container..."
-          docker build -t ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY_MYSQL }}:$NEW_TAG -t ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY_MYSQL }}:latest -f /app/Dockerfile_mysql .
+          docker build -t ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY_MYSQL }}:$NEW_TAG -t ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY_MYSQL }}:latest -f ./app/Dockerfile_mysql .
           DBID=$(docker run -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }} --name my_db ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY_MYSQL }})
           
           echo "Waiting for MySQL to be ready..."
@@ -88,7 +88,7 @@ jobs:
           DBHOST=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $DBID)
           echo "DBHOST=$DBHOST" >> $GITHUB_ENV
           echo "DBPORT=3306" >> $GITHUB_ENV
-          docker build -t ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY_APP }}:$NEW_TAG -t ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY_APP }}:latest /app/.
+          docker build -t ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY_APP }}:$NEW_TAG -t ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY_APP }}:latest ./app/.
           echo "Starting webserver containers..."
           (docker run -p 8081:8080 -e DBHOST=$DBHOST -e DBPWD=${{ secrets.MYSQL_ROOT_PASSWORD }} -d --name my_app ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY_APP }}:$NEW_TAG && echo "App started") &
           wait
