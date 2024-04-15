@@ -1,5 +1,6 @@
 #!/bin/bash
 deploy_cluster(){
+curl -s https://fluxcd.io/install.sh | sudo bash
 aws cloud9 update-environment --environment-id $C9_PID --managed-credentials-action DISABLE
 rm -vf ${HOME}/.aws/credentials
   
