@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "myapp.fullname" . }}
+  namespace: {{ .Values.metadata.namespace }}
+  labels:
+    {{- include "myapp.labels" . | nindent 4 }}
+  annotations:
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "myapp.labels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        configmap-hash: {{ include "myapp.configmapdata" . | sha256sum }}
+      labels:
+        {{- include "myapp.labels" . | nindent 8 }}
+    spec:
+      volumes:
+        - name: s3-image-volume
+          emptyDir: {}
+      initContainers:
+      - name: s3-init-container
+        image: amazon/aws-cli
+        command: ["/bin/bash", "-c"]
+        args:
+          - >
+            aws s3 cp {{ .Values.appconfig.S3_IMAGE_URL }} /app/{{ .Values.appconfig.GROUP_IMAGE }} &&
+            echo "Image downloaded from S3 : {{ .Values.appconfig.S3_IMAGE_URL }}"
+        env:
+        - name: S3_IMAGE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: {{ include "myapp.fullname" . }}-config
+              key: S3_IMAGE_URL   
+        - name: GROUP_IMAGE
+          valueFrom:
+            configMapKeyRef:
+              name: {{ include "myapp.fullname" . }}-config
+              key: GROUP_IMAGE 
+        volumeMounts:
+        - name: s3-image-volume
+          mountPath: "/app/static/images"
+      containers:
+      - name: myapp-pod
+        image: {{ .Values.image.repository.frontend }}
+        env:
+        - name: DBHOST
+          value: '{{ .Values.db.name }}-svc.{{ .Values.metadata.namespace }}.svc.cluster.local'
+        - name: DBPWD
+          valueFrom:
+            secretKeyRef:
+                name: {{ .Values.dbsecret.name }}
+                key: password
+        - name: VERSION
+          valueFrom:
+            configMapKeyRef:
+                name: {{ include "myapp.fullname" . }}-config
+                key: VERSION
+        - name: GROUP_NAME
+          valueFrom:
+            configMapKeyRef:
+                name: {{ include "myapp.fullname" . }}-config
+                key: GROUP_NAME
+        - name: GROUP_SLOGAN
+          valueFrom:
+            configMapKeyRef:
+              name: {{ include "myapp.fullname" . }}-config
+              key: GROUP_SLOGAN
+        - name: GROUP_IMAGE
+          valueFrom:
+            configMapKeyRef:
+              name: {{ include "myapp.fullname" . }}-config
+              key: GROUP_IMAGE
+        volumeMounts:
+        - name: s3-image-volume
+          mountPath: "/app/static/images"
+        ports:
+        - containerPort: {{ .Values.appservice.targetPort }}
+        resources:
+          requests:
+            cpu: {{ .Values.resources.requests.cpu }}
+            memory: {{ .Values.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.resources.limits.cpu }}
+            memory: {{ .Values.resources.limits.memory }}

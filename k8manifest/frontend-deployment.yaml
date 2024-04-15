@@ -18,46 +18,76 @@ spec:
       app.kubernetes.io/version: v1
   template:
     metadata:
+      annotations:
+        configmap-hash: configHash
       labels:
         app.kubernetes.io/name: myapp
         app.kubernetes.io/component: frontend
         app.kubernetes.io/part-of: employeeapp
         app.kubernetes.io/version: v1
     spec:
+      volumes:
+        - name: s3-image-volume
+          emptyDir: {}
+      initContainers:
+      - name: s3-init-container
+        image: amazon/aws-cli
+        command: ["/bin/bash", "-c"]
+        args:
+          - >
+            aws s3 cp $S3_IMAGE_URL /app/$GROUP_IMAGE &&
+            echo "Image downloaded from S3 : $S3_IMAGE_URL";
+        env:
+        - name: S3_IMAGE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: myapp-config
+              key: S3_IMAGE_URL   
+        - name: GROUP_IMAGE
+          valueFrom:
+            configMapKeyRef:
+              name: myapp-config
+              key: GROUP_IMAGE 
+        volumeMounts:
+        - name: s3-image-volume
+          mountPath: "/app/static/images"
       containers:
-        - name: myapp-pod
-          image: 636276102612.dkr.ecr.us-east-1.amazonaws.com/app_image
-          env:
-            - name: DBHOST
-              value: 'mysql-svc.final.svc.cluster.local'
-            - name: DBPWD
-              valueFrom:
-                secretKeyRef:
-                  name: mydb-secret
-                  key: password
-            - name: VERSION
-              value: v1
-            - name: GROUP_NAME
-              valueFrom:
-                configMapKeyRef:
-                  name: myapp-config
-                  key: Group_NAME
-            - name: GROUP_SLOGAN
-              valueFrom:
-                configMapKeyRef:
-                  name: myapp-config
-                  key: Group_SLOGAN
-            - name: GROUP_IMAGE
-              valueFrom:
-                configMapKeyRef:
-                  name: myapp-config
-                  key: Group_IMAGE
-          ports:
-            - containerPort: 81
-          resources:
-            requests:
-              cpu: '100m'
-              memory: '100Mi'
-            limits:
-              cpu: '200m'
-              memory: '200Mi'
+      - name: myapp-pod
+        image: 636276102612.dkr.ecr.us-east-1.amazonaws.com/app_image
+        env:
+        - name: DBHOST
+          value: 'mysql-svc.final.svc.cluster.local'
+        - name: DBPWD
+          valueFrom:
+            secretKeyRef:
+                name: mydb-secret
+                key: password
+        - name: VERSION
+          value: v1
+        - name: GROUP_NAME
+          valueFrom:
+            configMapKeyRef:
+                name: myapp-config
+                key: GROUP_NAME
+        - name: GROUP_SLOGAN
+          valueFrom:
+            configMapKeyRef:
+              name: myapp-config
+              key: GROUP_SLOGAN
+        - name: GROUP_IMAGE
+          valueFrom:
+            configMapKeyRef:
+              name: myapp-config
+              key: GROUP_IMAGE
+        volumeMounts:
+        - name: s3-image-volume
+          mountPath: "/app/static/images"
+        ports:
+        - containerPort: 81
+        resources:
+          requests:
+            cpu: '100m'
+            memory: '100Mi'
+          limits:
+            cpu: '200m'
+            memory: '200Mi'
