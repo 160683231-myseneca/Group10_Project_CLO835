@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "myapp.fullname" . }}-config
+  namespace: {{ .Values.metadata.namespace }}
+  labels:
+    {{- include "myapp.labels" . | nindent 4 }}
+  annotations:
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
+data:
+  VERSION: "{{ .Values.appconfig.VERSION }}"
+  GROUP_NAME: "{{ .Values.appconfig.GROUP_NAME }}"
+  GROUP_SLOGAN: "{{ .Values.appconfig.GROUP_SLOGAN }}"
+  S3_IMAGE_URL: "{{ .Values.appconfig.S3_IMAGE_URL }}"
+  GROUP_IMAGE: "{{ .Values.appconfig.GROUP_IMAGE }}"

@@ -6,5 +6,5 @@ metadata:
 data:
   GROUP_NAME: "Pod Pandit"
   GROUP_SLOGAN: "Kubernetes: Because Good Things Come in Small Pods!"
-  S3_IMAGE_URL: "s3://clo835finalbucket/banner1.jpg"
+  S3_IMAGE_URL: "s3://clo835finalbucket/banner2.jpg"
   GROUP_IMAGE: "/static/images/s3_image_banner.jpg"

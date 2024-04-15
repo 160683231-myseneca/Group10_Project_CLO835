@@ -1,0 +1,18 @@
+{{- if .Values.shared.deploy }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.db.name }}-svc
+  namespace: {{ .Values.metadata.namespace }}
+  labels:
+    {{- include "mysql.labels" . | nindent 4 }}
+  annotations:
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+  - port: {{ .Values.dbservice.port }}
+    targetPort: {{ .Values.dbservice.targetPort }}
+  selector:
+    {{- include "mysql.labels" . | nindent 4 }}
+{{- end }}

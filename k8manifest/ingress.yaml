@@ -16,14 +16,14 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: myapp-lb
+            name: myapp-svc
             port:
               number: 80
       - path: /(.*)
         pathType: Prefix
         backend:
           service:
-            name: myapp-lb
+            name: myapp-svc
             port:
               number: 80
 ---
@@ -33,6 +33,7 @@ metadata:
   name: myapp-ingress-static
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /static/$2
 spec:
   ingressClassName: nginx
@@ -43,6 +44,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: myapp-lb
+            name: myapp-svc
             port: 
               number: 80

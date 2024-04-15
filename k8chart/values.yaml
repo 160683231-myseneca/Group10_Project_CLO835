@@ -1,0 +1,69 @@
+replicaCount: 1
+
+metadata:
+  namespace: final
+
+image:
+  repository:
+    frontend: 636276102612.dkr.ecr.us-east-1.amazonaws.com/app_image
+    backend: 636276102612.dkr.ecr.us-east-1.amazonaws.com/mysql_image
+  pullPolicy: IfNotPresent
+
+app:
+  name: myapp
+  component: frontend
+  partOf: employee
+
+appservice:
+  port: 80
+  targetPort: 81
+  
+appconfig:
+  VERSION: "v1"
+  GROUP_NAME: "Pod Pandit"
+  GROUP_SLOGAN: "Kubernetes: Because Good Things Come in Small Pods!"
+  S3_IMAGE_URL: "s3://clo835finalbucket/banner1.jpg"
+  GROUP_IMAGE: "/static/images/s3_image_banner.jpg"
+
+db:
+  name: mysql
+  component: backend
+  partOf: employee
+  
+dbservice:
+  port: 3306
+  targetPort: 3306
+
+dbsecret:
+  name: mydb-secret
+
+ingress:
+  enabled: true
+  servicePort: 80
+  paths:
+  - name: v1
+    path: /v1(/|$)(.*)
+    staticpath:  /v1/static(/|$)(.*)
+    pathType: Prefix
+  - name: v2
+    path: /v2(/|$)(.*)
+    staticpath:  /v2/static(/|$)(.*)
+    pathType: Prefix
+  - name: v1
+    path: /
+    staticpath: /static(/|$)(.*)
+    pathType: Prefix
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 500Mi
+  limits:
+    cpu: 200m
+    memory: 1Gi
+
+shared:
+  deploy: true
+
+deploy:
+  baseName: web
