@@ -24,8 +24,8 @@ eksctl create cluster -f eks_config.yaml
 init_cluster() {
 
 echo "Initialising cluster..."
-aws eks update-kubeconfig --name clo835 --region us-east-1
-eksctl utils write-kubeconfig --cluster=clo835 --region us-east-1
+aws eks update-kubeconfig --name clo835-final --region us-east-1
+eksctl utils write-kubeconfig --cluster=clo835-final --region us-east-1
 
 echo "Log into ECR"
 aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 636276102612.dkr.ecr.us-east-1.amazonaws.com
@@ -41,6 +41,9 @@ wget https://hey-release.s3.us-east-2.amazonaws.com/hey_linux_amd64
 chmod +x hey_linux_amd64
 sudo mv hey_linux_amd64 /usr/local/bin/hey
 
+echo "Install CSI driver to the cluster clo835-final in the region us-east-1"
+eksctl create addon --name aws-ebs-csi-driver --cluster clo835-final --region us-east-1
+
 # echo "Creating aws credentials..."  
 # kubectl create secret generic aws-creds --from-literal=awsAccessKeyId=$aws_access_key_id --from-literal=awsSecretAccessKey=$aws_secret_access_key --from-literal=awsSessionToken=$aws_session_token -n final
   
@@ -52,8 +55,6 @@ echo "Starting deployment..."
 
 echo "Creating namespaces..."
 kubectl create ns final
-
-sleep 10s
  
 echo "Enter MySQL root password:"
 read -s MYSQL_ROOT_PASSWORD
@@ -61,9 +62,12 @@ read -s MYSQL_ROOT_PASSWORD
 kubectl create secret generic mydb-secret --from-literal=password="$MYSQL_ROOT_PASSWORD" --type=kubernetes.io/basic-auth -n final 
 
 echo "Deploying backend..."
+kubectl apply -f k8manifest/backend-pv.yaml
+sleep 30s
 kubectl apply -f k8manifest/backend-deployment.yaml -n final
 kubectl apply -f k8manifest/backend-service.yaml -n final
 
+sleep 60s
 echo "Deploying frontend..."
 kubectl apply -f k8manifest/frontend-configmap.yaml -n final
 CONFIG_HASH=$(kubectl get configmap myapp-config -n final -o yaml | sha256sum | cut -d' ' -f1)  
@@ -73,9 +77,8 @@ kubectl apply -f k8manifest/frontend-service.yaml -n final
 }
 
 lb_ingress() {
-echo "deploying lb and ingress..."
+echo "deploying ingress..."
 kubectl apply -f k8manifest/ingress.yaml -n final
-kubectl apply -f k8manifest/load-balancer.yaml
 kubectl get ingress myapp-ingress -n final -o jsonpath="{.status.loadBalancer.ingress[*].hostname}" && echo""
 }
 
@@ -127,13 +130,17 @@ deploy_helm() {
 # tar xfz kubeseal-0.18.0-linux-amd64.tar.gz
 # sudo install -m 755 kubeseal /usr/local/bin/kubeseal
 
+# kubectl rollout restart deployment/myapp -n final
 # kubectl delete ingressclass nginx
 # kubectl delete ingress --all -n final
 # kubectl delete configmaps --all -n final
 # kubectl delete services --all -n final
 # kubectl delete serviceacccounts --all -n final
+# kubectl delete secrets --all -n final
+# kubectl delete sealedsecrets --all -n final
 # kubectl delete roles --all -n final
 # kubectl delete rolebindings --all -n final
+# kubectl delete pvc --all -n final
 # kubectl delete all --all -n final
 # kubectl delete namespace final
 
@@ -149,14 +156,14 @@ helm install sealed-secrets sealed-secrets/sealed-secrets -n kube-system --set-s
 
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo update
-helm install nginx-ingress ingress-nginx/ingress-nginx --namespace ingress-nginx --create-namespace --set controller.service.type=LoadBalancer --set controller.admissionWebhooks.enabled=false
+# helm install nginx-ingress ingress-nginx/ingress-nginx --namespace ingress-nginx --create-namespace --set controller.service.type=LoadBalancer --set controller.admissionWebhooks.enabled=false
 
 
 echo "Creating sealed secrets..."
-kubectl create secret generic mydb-secret --namespace final --dry-run=client --from-literal=password=mytopsecret -o yaml | kubeseal --controller-name=sealed-secrets-controller --controller-namespace=kube-system --scope cluster-wide --format yaml| kubectl apply -f -
+kubectl create secret generic mydb-secret --namespace project --dry-run=client --from-literal=password=mytopsecret -o yaml | kubeseal --controller-name=sealed-secrets-controller --controller-namespace=kube-system --scope cluster-wide --format yaml| kubectl apply -f -
 
-helm install web-v1 k8chart/ --values k8chart/values.yaml
-
+helm install web k8chart/ --values k8chart/values.yaml
+helm upgrade web k8chart/ --values k8chart/values.yaml
 }
 
 delete_cluster() {
@@ -168,7 +175,7 @@ echo "Select an action:"
 echo "1. Start EKS Cluster"
 echo "2. Initialise cluster"
 echo "3. Deploy App"
-echo "4. Deploy ingress"
+echo "4. Deploying ingress"
 echo "5. Update configMap file with new picture"
 echo "6. Autoscaling using HPA and service account"
 echo "7. Deploy using Helm"

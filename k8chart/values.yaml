@@ -1,7 +1,7 @@
 replicaCount: 1
 
 metadata:
-  namespace: final
+  namespace: project
 
 image:
   repository:
@@ -43,15 +43,9 @@ ingress:
   paths:
   - name: v1
     path: /v1(/|$)(.*)
-    staticpath:  /v1/static(/|$)(.*)
-    pathType: Prefix
-  - name: v2
-    path: /v2(/|$)(.*)
-    staticpath:  /v2/static(/|$)(.*)
     pathType: Prefix
   - name: v1
     path: /
-    staticpath: /static(/|$)(.*)
     pathType: Prefix
 
 resources:
