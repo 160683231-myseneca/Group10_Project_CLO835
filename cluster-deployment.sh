@@ -65,7 +65,7 @@ kubectl create secret generic mydb-secret --from-literal=password="$MYSQL_ROOT_P
 echo "Deploying backend..."
 kubectl apply -f k8manifest/backend-storageclass.yaml
 sleep 30s
-kubectl apply -f k8manifest/backend-stateful.yaml -n final
+kubectl apply -f k8manifest/backend_statefulset.yaml -n final
 kubectl apply -f k8manifest/backend-service.yaml -n final
 
 sleep 60s
@@ -80,6 +80,7 @@ kubectl apply -f k8manifest/frontend-service.yaml -n final
 lb_ingress() {
 echo "deploying ingress..."
 kubectl apply -f k8manifest/ingress.yaml -n final
+sleep 30s
 kubectl get ingress myapp-ingress -n final -o jsonpath="{.status.loadBalancer.ingress[*].hostname}" && echo""
 }
 
@@ -122,6 +123,20 @@ kubectl get pods -n final
 
 deploy_helm() {
 
+flux reconcile source git flux-system
+flux get kustomizations
+kubectl get all -n flux-system
+flux reconcile kustomization flux-system
+kubectl get events -n flux-system
+kubectl logs -n flux-system -l app=kustomize-controller
+
+
+
+
+
+
+
+
 
 # curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
 # chmod 700 get_helm.sh
@@ -131,7 +146,6 @@ deploy_helm() {
 # tar xfz kubeseal-0.18.0-linux-amd64.tar.gz
 # sudo install -m 755 kubeseal /usr/local/bin/kubeseal
 
-# kubectl rollout restart deployment/myapp -n final
 # kubectl delete ingressclass nginx
 
 kubectl delete ingress --all -n final
@@ -144,19 +158,32 @@ kubectl delete roles --all -n final
 kubectl delete rolebindings --all -n final
 kubectl delete pvc --all -n final
 kubectl delete all --all -n final
+kubectl delete HorizontalPodAutoscaler --all -n final
 kubectl delete namespace final
 
-kubectl delete ingress --all -n project
-kubectl delete configmaps --all -n project
-kubectl delete services --all -n project
-kubectl delete serviceacccounts --all -n project
-kubectl delete secrets --all -n project
-kubectl delete sealedsecrets --all -n project
-kubectl delete roles --all -n project
-kubectl delete rolebindings --all -n project
-kubectl delete pvc --all -n project
-kubectl delete all --all -n project
-kubectl delete namespace project
+# kubectl delete ingress --all -n project
+# kubectl delete configmaps --all -n project
+# kubectl delete services --all -n project
+# kubectl delete serviceacccounts --all -n project
+# kubectl delete secrets --all -n project
+# kubectl delete sealedsecrets --all -n project
+# kubectl delete roles --all -n project
+# kubectl delete rolebindings --all -n project
+# kubectl delete pvc --all -n project
+# kubectl delete all --all -n project
+# kubectl delete namespace project
+
+
+# 
+
+# echo "Creating sealed secrets controller..."
+# helm repo add sealed-secrets https://bitnami-labs.github.io/sealed-secrets
+# helm install sealed-secrets sealed-secrets/sealed-secrets -n kube-system --set-string fullnameOverride=sealed-secrets-controller 
+
+
+# helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+# helm repo update
+# helm install nginx-ingress ingress-nginx/ingress-nginx --namespace ingress-nginx --create-namespace --set controller.service.type=LoadBalancer --set controller.admissionWebhooks.enabled=false
 
 
 
@@ -164,25 +191,16 @@ kubectl delete namespace project
 echo "Creating namespaces..."
 kubectl create ns project
 
-echo "Creating sealed secrets controller..."
-helm repo add sealed-secrets https://bitnami-labs.github.io/sealed-secrets
-helm install sealed-secrets sealed-secrets/sealed-secrets -n kube-system --set-string fullnameOverride=sealed-secrets-controller 
-
-
-helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-helm repo update
-# helm install nginx-ingress ingress-nginx/ingress-nginx --namespace ingress-nginx --create-namespace --set controller.service.type=LoadBalancer --set controller.admissionWebhooks.enabled=false
-
-
 echo "Creating sealed secrets..."
-kubectl create secret generic mydb-secrettest --namespace final --dry-run=client --from-literal=password=mytopsecret -o yaml | kubeseal --controller-name=sealed-secrets-controller --controller-namespace=kube-system --scope cluster-wide --format yaml> testsecret.yaml
-kubectl create secret generic mydb-secrettest --namespace project --dry-run=client --from-literal=password=mytopsecret -o yaml | kubeseal --controller-name=sealed-secrets-controller --controller-namespace=kube-system --scope cluster-wide --format yaml> testsecret.yaml
-
-
 kubectl create secret generic mydb-secret --namespace project --dry-run=client --from-literal=password=mytopsecret -o yaml | kubeseal --controller-name=sealed-secrets-controller --controller-namespace=kube-system --scope cluster-wide --format yaml| kubectl apply -f -
 
-helm install web -n final k8chart/ --values k8chart/values.yaml
-helm upgrade web -n final k8chart/ --values k8chart/values.yaml
+helm install web -n project k8chart/ --values k8chart/values.yaml
+helm list -n project
+kubectl get all -n project
+
+kubectl get ingress myapp-ingress -n project -o jsonpath="{.status.loadBalancer.ingress[*].hostname}" && echo""
+
+# helm upgrade web -n final k8chart/ --values k8chart/values.yaml
 }
 
 delete_cluster() {
