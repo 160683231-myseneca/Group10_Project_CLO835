@@ -1,0 +1,61 @@
+{{- if .Values.shared.deploy }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.app.name }}-ingress
+  namespace: {{ .Values.metadata.namespace }}
+  annotations:
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    # nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      {{- $root := . }}
+      {{- $appName := .Values.app.name }}
+      {{- $servicePort := .Values.ingress.servicePort }}
+      {{- range .Values.ingress.paths }}
+      - path: {{ .path }}
+        pathType: {{ .pathType }}
+        backend:
+          service:
+            name: "{{ $appName }}-{{ .name }}-svc"
+            port:
+              number: {{ $servicePort }}
+      {{- end }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.app.name }}-ingress-static
+  namespace: {{ .Values.metadata.namespace }}
+  annotations:
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /static/$2
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - path: /v1/static(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: "{{ .Values.app.name }}-v1-svc"
+            port:
+              number: {{ .Values.ingress.servicePort }}
+      - path: /static(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: "{{ .Values.app.name }}-v1-svc"
+            port:
+              number: {{ .Values.ingress.servicePort }}
+{{- end }}

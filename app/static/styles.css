@@ -1,0 +1,70 @@
+/* styles.css */
+body {
+  font-family: avenir;
+  background-color: var(--dynamic-color);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0px;
+  padding: 0px;
+  min-height: 100vh;
+  text-align: center;
+  color: darkslategrey;
+  font-size: large;
+}
+div.bannercontainer {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  height: 25vh;
+}
+#groupImageBanner {
+  height: 25vh;
+  object-fit: cover;
+  width: 100%;
+}
+div.subbannercontainer {
+  height: auto;
+  background: rgba(255, 255, 255, 0.5);
+  width: 100%;
+  position: absolute;
+  bottom: 5%;
+}
+div.contentcontainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 75vh;
+}
+div.subcontentcontainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+textarea {
+  color: darkslategrey;
+}
+a.bottomlink {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+input[type='number'],
+input[type='text'] {
+  height: 25px;
+  font-size: 14pt;
+  color: darkslategrey;
+}
+button {
+  background: lightslategrey;
+  height: 45px;
+  width: 200px;
+  color: white;
+  font-style: oblique;
+}

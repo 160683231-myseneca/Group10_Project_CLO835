@@ -1,0 +1,23 @@
+{% extends 'base.html' %} {% block content %}
+<div class="subcontentcontainer">
+    <form
+      action="{{ complete_url('/fetchdata') }}"
+      autocomplete="on"
+      method="POST">
+      <h3>Enter Employee ID</h3>
+      Employee ID:<br />
+      <input
+        type="number"
+        name="emp_id"
+        autofocus/><br /><br />
+      <button
+        type="submit">
+        FETCH INFO</button
+      ><br />
+</div>
+<a
+  class="bottomlink"
+  href="{{ complete_url('/') }}"
+  >Back</a
+>
+{% endblock %}
